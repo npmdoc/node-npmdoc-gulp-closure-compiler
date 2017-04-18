@@ -1,9 +1,14 @@
-# api documentation for  [gulp-closure-compiler (v0.4.0)](https://github.com/steida/gulp-closure-compiler#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-gulp-closure-compiler.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-gulp-closure-compiler) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-gulp-closure-compiler.svg)](https://travis-ci.org/npmdoc/node-npmdoc-gulp-closure-compiler)
+# npmdoc-gulp-closure-compiler
+
+#### api documentation for  [gulp-closure-compiler (v0.4.0)](https://github.com/steida/gulp-closure-compiler#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-gulp-closure-compiler.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-gulp-closure-compiler) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-gulp-closure-compiler.svg)](https://travis-ci.org/npmdoc/node-npmdoc-gulp-closure-compiler)
+
 #### Gulp plugin for Google Closure Compiler
 
-[![NPM](https://nodei.co/npm/gulp-closure-compiler.png?downloads=true)](https://www.npmjs.com/package/gulp-closure-compiler)
+[![NPM](https://nodei.co/npm/gulp-closure-compiler.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/gulp-closure-compiler)
 
-[![apidoc](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/screenCapture.buildNpmdoc.browser._2Fhome_2Ftravis_2Fbuild_2Fnpmdoc_2Fnode-npmdoc-gulp-closure-compiler_2Ftmp_2Fbuild_2Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/apidoc.html)
+- [https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/apidoc.html](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/apidoc.html)
+
+[![apidoc](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/screenCapture.buildCi.browser.%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/apidoc.html)
 
 ![npmPackageListing](https://npmdoc.github.io/node-npmdoc-gulp-closure-compiler/build/screenCapture.npmPackageListing.svg)
 
@@ -61,21 +66,17 @@
     "license": "MIT",
     "maintainers": [
         {
-            "name": "sindresorhus",
-            "email": "sindresorhus@gmail.com"
+            "name": "sindresorhus"
         },
         {
-            "name": "steida",
-            "email": "daniel@steigerwald.cz"
+            "name": "steida"
         },
         {
-            "name": "zarov",
-            "email": "berthet.a@gmail.com"
+            "name": "zarov"
         }
     ],
     "name": "gulp-closure-compiler",
     "optionalDependencies": {},
-    "readme": "ERROR: No README data found!",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/steida/gulp-closure-compiler.git"
@@ -86,16 +87,6 @@
     "version": "0.4.0"
 }
 ```
-
-
-
-# <a name="apidoc.tableOfContents"></a>[table of contents](#apidoc.tableOfContents)
-
-#### [module gulp-closure-compiler](#apidoc.module.gulp-closure-compiler)
-
-
-
-# <a name="apidoc.module.gulp-closure-compiler"></a>[module gulp-closure-compiler](#apidoc.module.gulp-closure-compiler)
 
 
 
