@@ -61,12 +61,160 @@
 
     <li class="apidocModuleLi"><a href="#apidoc.module.gulp-closure-compiler">module gulp-closure-compiler</a><ol>
 
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-closure-compiler.gulp-closure-compiler">
+            function <span class="apidocSignatureSpan"></span>gulp-closure-compiler
+            <span class="apidocSignatureSpan">(opt, execFile_opt)</span>
+            </a>
+
+        </li>
+
     </ol></li>
 
 </ol></div>
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.gulp-closure-compiler" id="apidoc.module.gulp-closure-compiler">module gulp-closure-compiler</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-closure-compiler.gulp-closure-compiler" id="apidoc.element.gulp-closure-compiler.gulp-closure-compiler">
+        function <span class="apidocSignatureSpan"></span>gulp-closure-compiler
+        <span class="apidocSignatureSpan">(opt, execFile_opt)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">gulp-closure-compiler = function (opt, execFile_opt) {
+  // As fileName is the only required option, it is the default first argument
+  if ( typeof opt == &#x27;string&#x27; ) {
+    opt = {
+        fileName: opt
+    };
+  }
+  opt = opt || {};
+  opt.maxBuffer = opt.maxBuffer || 1000;
+  opt.continueWithWarnings = opt.continueWithWarnings || false;
+  var files = [];
+  var execFile = execFile_opt || child_process.execFile;
+
+  if (!opt.fileName &#x26;&#x26; !hasModules())
+    throw new gutil.PluginError(PLUGIN_NAME, &#x27;Missing fileName option.&#x27;);
+
+  var getFlagFilePath = function(files) {
+    var src = files.map(function(file) {
+      var relativePath = path.relative(file.cwd, file.path);
+      return &#x27;--js=&#x22;&#x27; + relativePath + &#x27;&#x22;&#x27;;
+    }).join(&#x27;\n&#x27;);
+    return tempWrite.sync(src);
+  };
+
+  // Can&#x27;t use sindresorhus/dargs, compiler requires own syntax.
+  var flagsToArgs = function(flags) {
+    var args = [];
+    for (var flag in flags || {}) {
+      var values = flags[flag];
+      if (!Array.isArray(values)) values = [values];
+      values.forEach(function(value) {
+        if (flag === &#x27;externs&#x27;) {
+          glob.sync(value).forEach(function(resolved){
+            args.push(buildFlag(flag, resolved))
+          });
+        } else {
+          args.push(buildFlag(flag, value));
+        }
+      });
+    }
+    return args;
+  };
+
+  var buildFlag = function(flag, value){
+    return &#x27;--&#x27; + flag + (value === null ? &#x27;&#x27; : &#x27;=&#x27; + value)
+  };
+
+  function bufferContents(file) {
+    if (file.isNull()) return;
+    if (file.isStream()) {
+      return this.emit(&#x27;error&#x27;,
+        new gutil.PluginError(PLUGIN_NAME, &#x27;Streaming not supported&#x27;));
+    }
+    files.push(file);
+  }
+
+  function hasModules(){
+    var properties = Object.getOwnPropertyNames(opt.compilerFlags || {});
+    return properties.indexOf(&#x22;module&#x22;) &#x26;&#x26; properties.indexOf(&#x22;module_output_path_prefix&#x22;);
+  }
+
+
+  function endStream() {
+    if (!files.length) return this.emit(&#x27;end&#x27;);
+    var firstFile = files[0];
+    var outputFilePath = tempWrite.sync(&#x27;&#x27;);
+    var args;
+    var compilerPath = opt.compilerPath || CC.jar_path;
+
+    if (compilerPath) {
+      args = [
+        &#x27;-jar&#x27;,
+        // For faster compilation. It&#x27;s supported everywhere from Java 1.7+.
+        opt.tieredCompilation ? &#x27;-XX:+TieredCompilation&#x27; : &#x27;-XX:-TieredCompilation&#x27;,
+        compilerPath,
+        // To prevent maximum length of command line string exceeded error.
+        &#x27;--flagfile=&#x22;&#x27; + getFlagFilePath(files) + &#x27;&#x22;&#x27;
+      ];
+    } else {
+      args = [
+        // To prevent maximum length of command line string exceeded error.
+        &#x27;--flagfile=&#x22;&#x27; + getFlagFilePath(files) + &#x27;&#x22;&#x27;
+      ];
+    }
+    args = args.concat(flagsToArgs(opt.compilerFlags));
+
+    var javaFlags = opt.javaFlags || [];
+    args = javaFlags.concat(args);
+
+    // Force --js_output_file to prevent [Error: stdout maxBuffer exceeded.]
+    args.push(&#x27;--js_output_file=&#x22;&#x27; + opt.fileName + &#x27;&#x22;&#x27;);
+
+    // Create directory for output file if it doesn&#x27;t exist.
+    if (opt.fileName &#x26;&#x26; !fs.existsSync(path.dirname(opt.fileName))) {
+      fs.mkdirSync(path.dirname(opt.fileName));
+    }
+
+    // Enable custom max buffer to fix &#x22;stderr maxBuffer exceeded&#x22; error. Default is 1000*1024.
+    var executable = compilerPath ? &#x27;java&#x27; : &#x27;closure-compiler&#x27;;
+    var jar = execFile(executable, args, { maxBuffer: opt.maxBuffer*1024 }, function(error, stdout, stderr) {
+      if (error || (stderr &#x26;&#x26; !opt.continueWithWarnings)) {
+        this.emit(&#x27;error&#x27;, new gutil.PluginError(PLUGIN_NAME, error || stderr));
+        return;
+      }
+
+      if (stderr) {
+        gutil.log(stderr);
+      }
+
+      var outputFileSrc = fs.readFile(opt.fileName, function(err, data) {
+        if (err) {
+          this.emit(&#x27;error&#x27;, new gutil.PluginError(PLUGIN_NAME, err));
+          return;
+        }
+
+        if(opt.fileName){
+          var outputFile = new gutil.File({
+            base: firstFile.base,
+            contents: new Buffer(data),
+            cwd: firstFile.cwd,
+            path: path.join(firstFile.base, opt.fileName)
+          });
+
+         this.emit(&#x27;data&#x27;, outputFile);
+         fs.unlinkSync(opt.fileName);
+        }
+        this.emit(&#x27;en ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
 
 </div>
 
